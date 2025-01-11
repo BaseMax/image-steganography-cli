@@ -7,23 +7,21 @@ def encode_image(image_path, message, output_path):
     img = Image.open(image_path)
     if img.mode != 'RGB':
         raise ValueError("The image should be in RGB mode")
-    
-    binary_message = ''.join(format(ord(char), '08b') for char in message) + '1111111111111110'
-    
-    img_data = list(img.getdata())
-    new_img_data = []
 
+    binary_message = ''.join(format(ord(char), '08b') for char in message) + '1111111111111110'
+
+    img_data = img.getdata()
+
+    new_img_data = []
     message_index = 0
+
     for pixel in img_data:
-        if message_index < len(binary_message):
-            pixel = list(pixel)
-            for i in range(3):
-                if message_index < len(binary_message):
-                    pixel[i] = (pixel[i] & ~1) | int(binary_message[message_index])
-                    message_index += 1
-            new_img_data.append(tuple(pixel))
-        else:
-            new_img_data.append(pixel)
+        pixel = list(pixel)
+        for i in range(3):
+            if message_index < len(binary_message):
+                pixel[i] = (pixel[i] & ~1) | int(binary_message[message_index])
+                message_index += 1
+        new_img_data.append(tuple(pixel))
 
     new_img = Image.new(img.mode, img.size)
     new_img.putdata(new_img_data)
@@ -34,14 +32,16 @@ def decode_image(image_path):
     img = Image.open(image_path)
     if img.mode != 'RGB':
         raise ValueError("The image should be in RGB mode")
-    
-    img_data = list(img.getdata())
-    binary_message = ''
+
+    img_data = img.getdata()
+
+    binary_message = []
 
     for pixel in img_data:
         for i in range(3):
-            binary_message += str(pixel[i] & 1)
+            binary_message.append(str(pixel[i] & 1))
 
+    binary_message = ''.join(binary_message)
     end_index = binary_message.find('1111111111111110')
     if end_index != -1:
         binary_message = binary_message[:end_index]
