@@ -2,6 +2,8 @@
 
 This program allows you to hide a secret message in an image using steganography techniques. The message is encoded in the least significant bits of the image's pixels and can be decoded later by extracting the hidden data.
 
+> Build a tool that hides messages inside images using steganography.
+  
 ## Features
 
 - **Encode**: Hide a secret message in an image.
